@@ -1,0 +1,158 @@
+Git: 开源分布式系统。
+
+分布式、元素据方式存储、无全局版本号。
+
+创建新仓库：git init
+检出仓库：本地仓库克隆模式：git clone/path/to/repository
+	远端服务器上的仓库：git clone username@host:/path/to/repository
+工作流:本地仓库由git维护的三棵“树”组成。
+第一个是工作目录，它持有实际文件；
+第二个是暂存区（Index），它像个缓存区，临时保存改动。
+第三个是HEAD，它指向你最后一次提交的结果。
+
+添加和提交
+提出更改（添加到缓存区）：git add<filename> git add *
+这是git基本工作流程的第一步；使用如下命令以实际提交改动；
+现在，改动已经提交到了HEAD上了，但是还没有到远端仓库。
+
+推送改动
+提交到远端仓库：git push origin master //可以把master换成任何想要推送的分支。
+
+若没有克隆现有仓库，想要将仓库链接到某个远程服务器，使用如下命令
+git remote add origin <server>
+
+分支：用来将特性开发绝缘开来。创建仓库的时候，master是默认分支。在其它分支上开发，
+完成后在将他们合并到主分支上。
+创建一个分支（feature_x），并切换过去：git ceckout -b feature_x
+切回主分支：git checkout master
+再把新建的分支删掉：git branch -d feature_x
+除非将分支推送到远端仓库，不然分支就是不为他人所见的。
+
+更新与合并：
+更新本地仓库至最新改动，执行：git pull，以在自己的工作目录中获取（fetch）并合并（merge）
+远端的改动。
+要何明其它分支到你的当前分支，执行 git merge <branch>
+上述二者git会尝试自动和并，并非每次都成功，可能出现冲突。手动合并冲突。改完之后执行
+git add <filename>将其标记为合并成功。
+合并改动之前，可以使用如下命令预览差异：git diff <source branch> <target branch>
+
+替换本地改动：
+若操作失误，使用 git checkout -- <filename>换掉本地改动。
+此命令会使用HEAD中的最新内容替换掉工作目录的文件。已添加到暂存区的改动以及新文件都不会受到影响
+丢弃本地所有改动与提交，到服务器上获取最新的版本历史，并见主动分支指向它：
+git fetch origin  
+git reset --hard origin/master
+
+
+
+
+设置用户名、密码：
+git config --global user.name "your name"
+git config --global user.email "email"
+
+版本库：又名仓库，repository。理解为目录。改目录里所有文件被Git管理。
+创建仓库
+$ mkdir learngit
+$ cd learngit
+$ pwd
+/Users/michael/learngit
+
+
+接下来通过 git init 命令把这个目录变成Git可以管理的仓库。
+
+然后在目录文件夹内创建文件readme.txt
+把它放到目录中
+git add readme.txt
+git commit -m "wrote a readme.file"
+
+为什么Git添加文件要add,commit一共两步呢？因为commit可以一次提交很多个文件。
+git add file1.txt
+git add file2.txt file3.txt
+git commit -m"add 3 files."
+
+git status 命令：查看结果
+git diff 命令：查看修改内容。
+git log 命令：查看历史记录。（由近到远显示）
+
+git用HEAD表示当前版本，HEAD^表示是个那个版本，HEAD^^表示上上个版本。
+上100个版本：HEAD~100
+
+工作区：电脑里能看到的目录。比如我的git_learning文件夹就是一个工作区。
+版本库（Repository）工作区里隐藏的.git，这个不算工作区，而是Git的版本库。
+里面有stage ：暂存区。还有git建立的第一个分支master，以及指向master的第一个指针HEAD。
+工作区 add stage commit master 
+实际上的第一步git add其实就是把文件添加到了暂存区
+第二步是用git commit 提交更改，实际上相当于把缓存区的所有内容提交到当前分支。
+
+
+撤销修改：
+git checkout -- file :丢弃工作区的修改。
+这里面有两种情况：
+一种是文件自修改后还没有被放到暂存区，现在撤销修改就是回到和版本库一模一样的状态。
+一种是文件已经添加到暂存区后，又作了修改，现在撤销修改就是回到添加到暂存区后的状态。
+总而言之，就是让这个文件回到最近一次git commit 或git add时的状态。
+
+git reset 命令：回退版本/暂存区的修改回退到工作区。
+
+删除文件：git rm test.txt
+git commit -m "remove test.txt"
+注：先手动删除文件，然后使用git rm <file> 和 git add<file>是一样的。
+
+删错了恢复：git checkout --test.txt.
+
+远程仓库：
+第一步：创建SSH Key.
+第二步：登录GitHub,打开Account settings,"SSH Keys"页面：然后点Add SSH Key 填上任意的title,在文件按
+里粘贴id_rsa.pub文件的内容。
+
+添加远程库：自己在GitHub上面创建一个
+
+关联远程库：git remote add origin git@github.com:wokedian/test.git
+添加后，远程库的名字就是origin，这是Git默认的叫法，也可以改成别的。
+下一步把本地仓库的所有内容推送到远程库上：
+git push -u origin master
+实际上是把当前的分支master推送到远程。
+由于远程库是空的，我们第一次推送master分支时，加上了-u参数，Git不但会把本地的master分支内容推送的远程新的master分支，
+还会把本地的master分支和远程的master分支关联起来，在以后的推送或者拉取时就可以简化命令。
+git push origin master
+
+删除远程库：
+git remote -v 查看远程库的信息。
+然后根据名字删除：比如删除origin：git remote rm origin.
+
+克隆远程库：git clone git2github.com:wokedian/gitskills.git
+
+分支管理：
+创建和合并分支：前情提要：在版本回退里，每次提交，Git都把它们串成一条时间线，这条时间线就是一条
+分支，即master分支。HEAD严格来说不是指向提交，而是指向master，master才是指向提交的，所以
+HEAD指向的是当前分支。
+开始的时候，master分支是一条线，Git用master指向最新的提交，再用HEAD指向master，就可以确定
+当前分支，以及当前分支的提交点。
+每次提交，master分支都会向前移动一步，随着不断提交，master分支的线也会越来越长。
+
+创建新的分支dev时，git建立了一个指针叫dev，指向master相同的提交，再把HEAD指向dev，就表示当前分支在
+dev上。从现在开始，对工作区的修改和提交就是针对dev分支了。
+
+合并：把dev合并到master上面。方法之一是直接把master指向dev的当前提交。
+
+创建dev分支，让后切换到dev分支：git checkout -b（？c）div 
+其中-b表示创建并切换，相当于 git branch div; giit checkout dev两条命令。
+git branch 命令：查看当前分支。
+
+git merge dev 命令：合并指定分支到当前分支。
+
+git branch -d dev 命令：删除分支dev
+
+git switch -c dev 命令：创建并切换到已有的分支。
+git switch dev 命令：直接切换。
+
+查看文件内容：cat 文件.文件后缀。
+
+含有"no-ff"合并分支：git merge --no-ff -m "merge with no-ff" dev
+
+
+
+
+
+
+
